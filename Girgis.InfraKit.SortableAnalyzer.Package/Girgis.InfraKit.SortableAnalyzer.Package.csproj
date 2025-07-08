@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>Girgis.InfraKit.SortableAnalyzer</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageVersion>1.0.1.0</PackageVersion>
     <Authors>Girgis</Authors>
     <PackageProjectUrl>https://github.com/girgis-adel/Girgis.InfraKit.SortableAnalyzer</PackageProjectUrl>
     <RepositoryUrl>https://github.com/girgis-adel/Girgis.InfraKit.SortableAnalyzer</RepositoryUrl>

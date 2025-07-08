@@ -17,7 +17,7 @@ namespace Girgis.InfraKit.SortableAnalyzer
         {
             get
             {
-                return ImmutableArray.Create("SORT001", "SORT002", "SORT003", "SORT004");
+                return ImmutableArray.Create("SORT001", "SORT002", "SORT003");
             }
         }
 
@@ -61,15 +61,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
                         Microsoft.CodeAnalysis.CodeActions.CodeAction.Create(
                             "Remove [SortableDefault]",
                             ct => RemoveSortableDefaultAttributeAsync(context.Document, root, node, ct),
-                            nameof(GirgisInfraKitSortableAnalyzerCodeFixProvider)),
-                        diagnostic);
-                    break;
-
-                case "SORT004":
-                    context.RegisterCodeFix(
-                        Microsoft.CodeAnalysis.CodeActions.CodeAction.Create(
-                            "Remove [Sortable] (invalid type)",
-                            ct => RemoveSortableAttributeAsync(context.Document, root, node, ct),
                             nameof(GirgisInfraKitSortableAnalyzerCodeFixProvider)),
                         diagnostic);
                     break;
@@ -129,18 +120,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
                     .Where(al => !al.Attributes.Any(a => a.Name.ToString().Contains("SortableDefault")))));
 
             var newRoot = root.ReplaceNode(classDecl, newClass);
-            return Task.FromResult(document.WithSyntaxRoot(newRoot));
-        }
-
-        private Task<Document> RemoveSortableAttributeAsync(Document document, SyntaxNode root, SyntaxNode node, CancellationToken ct)
-        {
-            if (!(node is PropertyDeclarationSyntax propertyDecl)) return Task.FromResult(document);
-
-            var newProperty = propertyDecl.WithAttributeLists(
-                new SyntaxList<AttributeListSyntax>(propertyDecl.AttributeLists
-                    .Where(al => !al.Attributes.Any(a => a.Name.ToString().Contains("Sortable")))));
-
-            var newRoot = root.ReplaceNode(propertyDecl, newProperty);
             return Task.FromResult(document.WithSyntaxRoot(newRoot));
         }
     }

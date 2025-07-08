@@ -9,22 +9,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class GirgisInfraKitSortableAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly HashSet<string> SupportedSortableTypes = new HashSet<string>()
-        {
-            "System.String",
-            "System.Int16",
-            "System.Int32",
-            "System.Int64",
-            "System.UInt16",
-            "System.UInt32",
-            "System.UInt64",
-            "System.Single",
-            "System.Double",
-            "System.Decimal",
-            "System.DateTime",
-            "System.DateTimeOffset"
-        };
-
         private static readonly DiagnosticDescriptor MissingSortableDefault = new DiagnosticDescriptor(
             "SORT001",
             "Missing [SortableDefault]",
@@ -46,13 +30,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
             "Usage",
             DiagnosticSeverity.Error, isEnabledByDefault: true);
 
-        private static readonly DiagnosticDescriptor InvalidSortableType = new DiagnosticDescriptor(
-            "SORT004",
-            "[Sortable] applied to unsupported type",
-            "Property '{0}' has unsupported type '{1}' for sorting.",
-            "Usage",
-            DiagnosticSeverity.Error, isEnabledByDefault: true);
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
@@ -60,8 +37,7 @@ namespace Girgis.InfraKit.SortableAnalyzer
                 return ImmutableArray.Create(
                     MissingSortableDefault,
                     InvalidDefaultReference,
-                    UnusedDefaultAttribute,
-                    InvalidSortableType
+                    UnusedDefaultAttribute
                     );
             }
         }
@@ -92,9 +68,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
             //
             // Rule 4:  If any [Sortable] is present, [SortableDefault] must exist on the class or ancestor.
             //
-            // Rule 5:  [Sortable] can only be applied on EF Core
-            //          orderable data types (e.g. int, long, DateTime, string, etc.).
-            //
 
 
             // Rule 3: SortableDefault used but no sortable props
@@ -119,16 +92,6 @@ namespace Girgis.InfraKit.SortableAnalyzer
                 if (defaultProp == null || !HasSortableAttribute(defaultProp))
                 {
                     context.ReportDiagnostic(Diagnostic.Create(InvalidDefaultReference, classSymbol.Locations[0], defaultPropName));
-                }
-            }
-
-            // Rule 5: Check type validity for all [Sortable]
-            foreach (var prop in sortableProps)
-            {
-                var typeName = prop.Type.ToDisplayString();
-                if (!SupportedSortableTypes.Contains(typeName))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(InvalidSortableType, prop.Locations[0], prop.Name, typeName));
                 }
             }
         }
